@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="AdwWindow" id="main_window">
+    <property name="default-height">600</property>
+    <property name="default-width">800</property>
+    <property name="width-request">350</property>
+    <property name="height-request">200</property>
+    <property name="title" translatable="true">Minimalist browser</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 800sp</condition>
+        <setter object="split_view" property="collapsed">true</setter>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwToolbarView">
+        <property name="top-bar-style">0</property>
+        <property name="content">
+          <object class="AdwOverlaySplitView" id="split_view">
+            <property name="show-sidebar" bind-source="show_sidebar_button" bind-property="active" bind-flags="sync-create"/>
+            <property name="sidebar">
+              <object class="GtkBox">
+                <property name="orientation">1</property>
+                <property name="halign">0</property>
+                <property name="hexpand">true</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <property name="halign">0</property>
+                    <property name="hexpand">true</property>
+                    <property name="margin-top">5</property>
+                    <child>
+                      <object class="GtkLabel">
+                      <property name="margin-top">10</property>
+                        <property name="label">Minimalist AI</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="aiEntry">
+                        <property name="placeholder-text">Enter query</property>
+                        <property name="margin-top">18</property>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkProgressBar" id="aiProgressBar">
+                        <property name="inverted">true</property>
+                        <property name="pulse-step">0.35</property>
+                        <property name="show-text">true</property>
+                        <property name="text"></property>
+                        <property name="visible">0</property>
+                        <property name="margin-bottom">5</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="hexpand">1</property>
+                    <property name="vexpand">1</property>
+                    <property name="margin-top">10</property>
+                    <child>
+                      <object class="GtkBox" id="aiResponseList">
+                        <property name="orientation">1</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="spacing">6</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+            <property name="content">
+              <object class="AdwTabOverview" id="overview">
+                <property name="enable-new-tab">true</property>
+                <property name="view">tab_view</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">1</property>
+                    <child>
+                      <object class="AdwTabBar">
+                        <property name="view">tab_view</property>
+                        <property name="autohide">false</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="spacing">5</property>
+                            <child type="start">
+                              <object class="GtkToggleButton" id="show_sidebar_button">
+                                <property name="icon-name">view-dual-symbolic</property>
+                                <property name="tooltip-text" translatable="true">Toggle Sidebar</property>
+                                <property name="active" bind-source="split_view" bind-property="show-sidebar" bind-flags="sync-create"/>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_new_tab">
+                                <property name="icon-name">tab-new-symbolic</property>
+                                <property name="has-frame">false</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="button_overview">
+                                <property name="icon-name">view-grid-symbolic</property>
+                                <property name="has-frame">false</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="end">
+                          <object class="GtkMenuButton">
+                            <property name="primary">True</property>
+                            <property name="icon-name">open-menu-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Menu</property>
+                            <property name="menu-model">primary_menu</property>
+                            <property name="has-frame">false</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabView" id="tab_view"></object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+    <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About Browser</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>
