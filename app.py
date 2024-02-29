@@ -1,6 +1,8 @@
 import sys
 import gi
 import threading
+import re
+
 gi.require_version('Gtk', '4.0')
 gi.require_version('WebKit', '6.0')
 gi.require_version('Adw', '1')
@@ -52,10 +54,16 @@ class MyApp(Adw.Application):
 
     def loadWebPage(self, entry, webview):
         url = entry.get_text()
+        regex = r"^(www\.)?[\w-]+\.[\w.]+[\w-]*$"
         scheme = GLib.Uri.peek_scheme(url)
         if not scheme:
-            url = f"http://{url}"
-        webview.load_uri(url)
+            if re.match(regex, url):
+                url = f"http://{url}"
+                webview.load_uri(url)
+            else:
+                webview.load_uri(f"https://www.duckduckgo.com/?q={url}")
+        else:
+            webview.load_uri(url)
 
     # Page load request initiated.
     # Elements such as entry and progress bar among others should be updated.
@@ -79,7 +87,7 @@ class MyApp(Adw.Application):
         tabPage.set_live_thumbnail(True)
 
         searchBarEntry = Gtk.Entry()
-        searchBarEntry.set_placeholder_text('Enter the URL here.')
+        searchBarEntry.set_placeholder_text('Search or enter web address')
         searchBarEntry.grab_focus()
         searchBarEntry.set_hexpand(True)
 
