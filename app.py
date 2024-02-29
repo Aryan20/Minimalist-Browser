@@ -69,9 +69,6 @@ class MyApp(Adw.Application):
             entry.set_progress_fraction(0)
             tabPage.set_loading(False)
 
-    def reloadPage(self, event, webview):
-        webview.reload()
-
     # Creates a new page composed of webview, searchbar, webview buttons, etc...
     def addPage(self):
         box = Gtk.Box()
@@ -91,17 +88,17 @@ class MyApp(Adw.Application):
 
         reloadButton = Gtk.Button()
         reloadButton.set_icon_name("view-refresh-symbolic")
-        reloadButton.connect("clicked", self.reloadPage, webview)
+        reloadButton.connect("clicked", lambda event, webview: webview.reload(), webview)
         reloadButton.set_has_frame(False)
 
         backButton = Gtk.Button()
         backButton.set_icon_name("go-previous-symbolic")
-        backButton.connect("clicked", self.goBack, webview)
+        backButton.connect("clicked", lambda event, webview: webview.go_back(), webview)
         backButton.set_has_frame(False)
 
         forwardButton = Gtk.Button()
         forwardButton.set_icon_name("go-next-symbolic")
-        forwardButton.connect("clicked", self.goForward, webview)
+        forwardButton.connect("clicked", lambda event, webview: webview.go_forward(), webview)
         forwardButton.set_has_frame(False)
 
         inspectorButton = Gtk.Button()
@@ -188,14 +185,6 @@ class MyApp(Adw.Application):
             inspector.close()
         else:
             inspector.show()
-
-    def goBack(self, event, webview):
-        """Callback for the backButton"""
-        webview.go_back()
-    
-    def goForward(self, event, webview):
-        """Callback for the forwardButton"""
-        webview.go_forward()
     
     # Creates the about section window
     def onAboutAction(self, widget, _):
