@@ -29,6 +29,9 @@ configure_file(
 minimalistbrowser_sources = [
   '__init__.py',
   'main.py',
+  'page.py',
+  'webview.py',
+  'preferences.py',
 ]
 
 install_data(minimalistbrowser_sources, install_dir: moduledir)
