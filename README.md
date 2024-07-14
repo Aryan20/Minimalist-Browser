@@ -13,7 +13,8 @@ From personal tests, LLaVa model gave the best compromise between answers and sp
 Steps to run ->
 - Run - ```pip install -r requirements.txt```
 - Run your llama file model or change API to point to something like OpenAI
-- Run - ```python app.py```
+- Run - ```meson build```
+- Run - ```cd build && meson install```
 - Enjoy the browser :)
 
 Note: Use on Linux

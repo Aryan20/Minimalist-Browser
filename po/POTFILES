@@ -1,0 +1,8 @@
+data/in.aryank.MinimalistBrowser.desktop.in
+data/in.aryank.MinimalistBrowser.metainfo.xml.in
+data/in.aryank.MinimalistBrowser.gschema.xml
+src/main.py
+src/page.py
+src/preferences.py
+src/webview.py
+src/web_sidebar.ui
