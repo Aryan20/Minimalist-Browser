@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=minimalistbrowser
+Exec=minimalistbrowser
+Icon=in.aryank.MinimalistBrowser
+Terminal=true
+Type=Application
+Categories=GTK;
+StartupNotify=true

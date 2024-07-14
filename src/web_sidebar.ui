@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="AdwWindow" id="main_window">
+  <object class="AdwApplicationWindow" id="main_window">
     <property name="default-height">600</property>
     <property name="default-width">800</property>
     <property name="width-request">350</property>

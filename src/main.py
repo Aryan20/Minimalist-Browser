@@ -18,12 +18,16 @@ client = OpenAI(
     api_key = "sk-no-key-required"
 )
 
-class MyApp(Adw.Application):
+class MinimalistbrowserApplication(Adw.Application):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.connect('activate', self.on_activate)
+        super().__init__(application_id='in.aryank.MinimalistBrowser',
+                         flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        self.createAction('quit', lambda *_: self.quit(), ['<primary>q'])
+        self.createAction('about', self.onAboutAction)
+        self.createAction('preferences', self.onPreferencesAction)
+        self.settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
 
-    def on_activate(self, app):
+    def do_activate(self):
         # Create a Builder
         builder = Gtk.Builder()
         builder.add_from_file("web_sidebar.ui")
@@ -46,8 +50,6 @@ class MyApp(Adw.Application):
 
         self.addPage()
 
-        self.createAction('about', self.onAboutAction)
-
         self.win = builder.get_object("main_window")
         self.win.set_application(self)
         self.win.present()
@@ -61,7 +63,7 @@ class MyApp(Adw.Application):
                 url = f"http://{url}"
                 webview.load_uri(url)
             else:
-                webview.load_uri(f"https://www.duckduckgo.com/?q={url}")
+                webview.load_uri(self.settings.get_string('search-engine').format(url=url))
         else:
             webview.load_uri(url)
 
@@ -199,13 +201,78 @@ class MyApp(Adw.Application):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
                                 application_name='Minimalist Browser',
-                                application_icon='security-medium-symbolic',
+                                application_icon='in.aryank.MinimalistBrowser',
                                 developer_name='Aryan Kaushik',
                                 version='0.1.0',
                                 developers=['Aryan Kaushik'],
                                 website='www.aryank.in',
                                 copyright='MIT © 2024 Aryan Kaushik')
         about.present()
+
+    def onPreferencesAction(self, widget, _):
+        preferences = Adw.PreferencesDialog()
+        prefPage1 = Adw.PreferencesPage()
+
+        searchEngineGroup = Adw.PreferencesGroup()
+        searchEngineGroup.set_title("Search Engine")
+
+        duckDuckGoRow = Adw.ActionRow()
+        duckDuckGoRow.set_title("DuckDuckGo")
+        self.duckDuckGoRowRadio = Gtk.CheckButton()
+        duckDuckGoRow.add_prefix(self.duckDuckGoRowRadio)
+
+        googleRow = Adw.ActionRow()
+        googleRow.set_title("Google")
+        self.googleRowRadio = Gtk.CheckButton()
+        googleRow.add_prefix(self.googleRowRadio)
+
+        customEngineRow = Adw.ActionRow()
+        customEngineRow.set_title("Custom Search Engine")
+        customEngineRowRadio = Gtk.CheckButton()
+        customEngineRow.add_prefix(customEngineRowRadio)
+
+        searchEngineEntry = Gtk.Entry()
+        searchEngineEntry.set_hexpand(True)
+        searchEngineEntry.set_valign(Gtk.Align.CENTER)
+        searchEngineEntry.connect("activate", self.customSearchEngine)
+        customEngineRow.add_suffix(searchEngineEntry)
+
+        self.googleRowRadio.set_group(self.duckDuckGoRowRadio)
+        customEngineRowRadio.set_group(self.googleRowRadio)
+        self.duckDuckGoRowRadio.connect("toggled", lambda _: self.changeEngine())
+        self.googleRowRadio.connect("toggled", lambda _: self.changeEngine())
+
+        self.duckDuckGoRowRadio.set_active(self.settings.get_boolean('search-engine-duck'))
+        self.googleRowRadio.set_active(self.settings.get_boolean('search-engine-google'))
+        if(self.settings.get_boolean('search-engine-custom')):
+            customEngineRowRadio.set_active(True)
+            searchEngineEntry.set_text(self.settings.get_string('search-engine'))
+
+        searchEngineGroup.add(duckDuckGoRow)
+        searchEngineGroup.add(googleRow)
+        searchEngineGroup.add(customEngineRow)
+        prefPage1.add(searchEngineGroup)
+        preferences.add(prefPage1)
+        preferences.present()
+
+    def changeEngine(self):
+        self.settings.set_boolean('search-engine-custom', False)
+        self.settings.set_boolean('search-engine-duck', False)
+        self.settings.set_boolean('search-engine-google', False)
+        if(self.googleRowRadio.get_active()):
+            self.settings.set_string('search-engine', "https://www.google.com/search?q={url}")
+            self.settings.set_boolean('search-engine-google', True)
+        elif(self.duckDuckGoRowRadio.get_active()):
+            self.settings.set_string('search-engine', "https://www.duckduckgo.com/?q={url}")
+            self.settings.set_boolean('search-engine-duck', True)
+            
+
+    def customSearchEngine(self, entry):
+        self.settings.set_boolean('search-engine-duck', False)
+        self.settings.set_boolean('search-engine-google', False)
+        self.settings.set_boolean('search-engine-custom', True)
+
+        self.settings.set_string('search-engine', entry.get_text())
 
     def createAction(self, name, callback, shortcuts=None):
         """Add an application action.
@@ -299,5 +366,7 @@ class MyApp(Adw.Application):
         self.responseReceived = True
 
 
-app = MyApp(application_id="in.aryank.MinimalistBrowser")
-app.run(sys.argv)
+def main(version):
+    """The application's entry point."""
+    app = MinimalistbrowserApplication()
+    return app.run(sys.argv)
