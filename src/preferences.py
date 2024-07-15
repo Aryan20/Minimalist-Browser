@@ -12,7 +12,12 @@ class preferences(Adw.PreferencesDialog):
 
     def createPage(self):
         prefPage1 = Adw.PreferencesPage()
+        prefPage1.add(self.buildSearchEngineGroup())
+        prefPage1.add(self.buildHomepageGroup())
+        self.add(prefPage1)
+        self.present()
 
+    def buildSearchEngineGroup(self):
         searchEngineGroup = Adw.PreferencesGroup()
         searchEngineGroup.set_title("Search Engine")
 
@@ -35,6 +40,7 @@ class preferences(Adw.PreferencesDialog):
         searchEngineEntry.set_hexpand(True)
         searchEngineEntry.set_valign(Gtk.Align.CENTER)
         searchEngineEntry.connect("activate", self.customSearchEngine)
+        searchEngineEntry.set_placeholder_text("Enter Custom Engine URL with {url} in place of query")
         customEngineRow.add_suffix(searchEngineEntry)
 
         self.googleRowRadio.set_group(self.duckDuckGoRowRadio)
@@ -51,9 +57,8 @@ class preferences(Adw.PreferencesDialog):
         searchEngineGroup.add(duckDuckGoRow)
         searchEngineGroup.add(googleRow)
         searchEngineGroup.add(customEngineRow)
-        prefPage1.add(searchEngineGroup)
-        self.add(prefPage1)
-        self.present()
+
+        return searchEngineGroup
 
     def changeEngine(self):
         self.settings.set_boolean('search-engine-custom', False)
@@ -73,3 +78,45 @@ class preferences(Adw.PreferencesDialog):
         self.settings.set_boolean('search-engine-custom', True)
 
         self.settings.set_string('search-engine', entry.get_text())
+
+    def buildHomepageGroup(self):
+        homepageGroup = Adw.PreferencesGroup()
+        homepageGroup.set_title("Home Page")
+
+        defaultRow = Adw.ActionRow()
+        defaultRow.set_title("Blank Page (Default)")
+        self.defaultRowRadio = Gtk.CheckButton()
+        defaultRow.add_prefix(self.defaultRowRadio)
+
+        customHomepageRow = Adw.ActionRow()
+        customHomepageRow.set_title("Custom Home Page")
+        customHomepageRowRadio = Gtk.CheckButton()
+        customHomepageRow.add_prefix(customHomepageRowRadio)
+
+        homepageEntry = Gtk.Entry()
+        homepageEntry.set_hexpand(True)
+        homepageEntry.set_valign(Gtk.Align.CENTER)
+        homepageEntry.set_text(self.settings.get_string('custom-homepage-url'))
+        homepageEntry.connect("activate", self.customHomepage)
+        homepageEntry.set_placeholder_text("Enter Custom Homepage URL")
+        customHomepageRow.add_suffix(homepageEntry)
+
+        customHomepageRowRadio.set_group(self.defaultRowRadio)
+        self.defaultRowRadio.set_active(not self.settings.get_boolean('custom-homepage'))
+        customHomepageRowRadio.set_active(self.settings.get_boolean('custom-homepage'))
+        self.defaultRowRadio.connect("toggled", lambda _: self.changeHomepage())
+        customHomepageRowRadio.connect("toggled", lambda _: self.changeHomepage())
+
+        homepageGroup.add(defaultRow)
+        homepageGroup.add(customHomepageRow)
+        return homepageGroup
+
+    def changeHomepage(self):
+        if(self.defaultRowRadio.get_active()):
+            self.settings.set_boolean('custom-homepage', False)
+        else:
+            self.settings.set_boolean('custom-homepage', True)
+
+    def customHomepage(self, entry):
+        self.settings.set_boolean('custom-homepage', True)
+        self.settings.set_string('custom-homepage-url', entry.get_text())

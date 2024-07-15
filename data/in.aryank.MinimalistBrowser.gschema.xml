@@ -3,8 +3,6 @@
 	<schema id="in.aryank.MinimalistBrowser" path="/in/aryank/MinimalistBrowser/">
         <key type="s" name="search-engine">
             <default>"https://www.duckduckgo.com/?q={url}"</default>
-            <summary>Menu System Monitor</summary>
-            <description>Change the Menu System Monitor.</description>
         </key>
         <key type="b" name="search-engine-duck">
             <default>true</default>
@@ -17,6 +15,14 @@
         <key type="b" name="search-engine-custom">
             <default>false</default>
             <summary>Custom search engine radio button state</summary>
+        </key>
+        <key type="b" name="custom-homepage">
+            <default>false</default>
+            <summary>Custom homepage radio button state</summary>
+        </key>
+        <key type="s" name="custom-homepage-url">
+            <default>""</default>
+            <summary>Stores custom homepage URL</summary>
         </key>
 	</schema>
 </schemalist>

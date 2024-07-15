@@ -41,8 +41,11 @@ class newWebview(WebKit.WebView):
         zoomInButton.set_sensitive(True)
         self.set_zoom_level(zoomLevel)
 
-    def loadWebPage(self, entry):
+    def loadWebPageEntryCallback(self, entry):
         url = entry.get_text()
+        self.loadWebPage(url)
+
+    def loadWebPage(self, url):
         settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
         regex = r"^(www\.)?[\w-]+\.[\w.]+[\w-]*$"
         scheme = GLib.Uri.peek_scheme(url)
@@ -66,3 +69,8 @@ class newWebview(WebKit.WebView):
         if(self.get_estimated_load_progress() >= 1):
             entry.set_progress_fraction(0)
             tabPage.set_loading(False)
+
+    def loadHomePage(self):
+        settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
+        if(settings.get_boolean('custom-homepage')):
+            self.loadWebPage(settings.get_string('custom-homepage-url'))

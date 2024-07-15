@@ -71,7 +71,7 @@ class newPage(Gtk.Box):
         actionBox.set_margin_end(5)
         actionBox.set_margin_bottom(7)
 
-        searchBarEntry.connect('activate', webview.loadWebPage)
+        searchBarEntry.connect('activate', webview.loadWebPageEntryCallback)
         webview.connect('load-changed', webview.loadChanged, searchBarEntry, backButton, forwardButton, tabPage)
         webview.connect('notify::title', lambda webview, event: tabPage.set_title(webview.get_title()))
         webview.connect('notify::favicon', lambda webview, event: tabPage.set_icon(webview.get_favicon()))
@@ -87,6 +87,7 @@ class newPage(Gtk.Box):
 
         self.append(actionBox)
         self.append(webview)
+        webview.loadHomePage()
 
     # Scrapes the sent website URL and send it to AI with a custom prompt.
     def sendToAI(self, event, webview, messages):
