@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=minimalistbrowser
+Name=Minimalist Browser
 Exec=minimalistbrowser
 Icon=in.aryank.MinimalistBrowser
-Terminal=true
+Terminal=false
 Type=Application
-Categories=GTK;
+Categories=X-Internet-browser;
 StartupNotify=true
