@@ -27,7 +27,7 @@ class MinimalistbrowserApplication(Adw.Application):
     def do_activate(self):
         # Create a Builder
         builder = Gtk.Builder()
-        builder.add_from_file("web_sidebar.ui")
+        builder.add_from_resource("/in/aryank/MinimalistBrowser/web_sidebar.ui")
 
         self.tab_view = builder.get_object("tab_view")
         self.button_new_tab = builder.get_object("button_new_tab")
