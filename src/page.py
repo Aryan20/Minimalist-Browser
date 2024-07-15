@@ -24,39 +24,20 @@ class newPage(Gtk.Box):
 
         webview = newWebview()
 
-        reloadButton = Gtk.Button()
-        reloadButton.set_icon_name("view-refresh-symbolic")
+        reloadButton = self.createActionButton("view-refresh-symbolic")
         reloadButton.connect("clicked", lambda event, webview: webview.reload(), webview)
-        reloadButton.set_has_frame(False)
-
-        backButton = Gtk.Button()
-        backButton.set_icon_name("go-previous-symbolic")
+        backButton = self.createActionButton("go-previous-symbolic")
         backButton.connect("clicked", lambda event: webview.go_back())
-        backButton.set_has_frame(False)
-
-        forwardButton = Gtk.Button()
-        forwardButton.set_icon_name("go-next-symbolic")
+        forwardButton = self.createActionButton("go-next-symbolic")
         forwardButton.connect("clicked", lambda event: webview.go_forward())
-        forwardButton.set_has_frame(False)
-
-        inspectorButton = Gtk.Button()
-        inspectorButton.set_icon_name("window-new-symbolic")
+        inspectorButton = self.createActionButton("window-new-symbolic")
         inspectorButton.connect("clicked", lambda event: webview.loadInspector())
-        inspectorButton.set_has_frame(False)
-
-        sendToAIButton = Gtk.Button()
-        sendToAIButton.set_icon_name("document-send-symbolic")
+        sendToAIButton = self.createActionButton("document-send-symbolic")
         sendToAIButton.connect("clicked", self.sendToAI, webview, messages)
-        sendToAIButton.set_has_frame(False)
-
-        zoomInButton = Gtk.Button()
-        zoomInButton.set_icon_name("zoom-in-symbolic")
-        zoomInButton.set_has_frame(False)
-
-        zoomOutButton = Gtk.Button()
-        zoomOutButton.set_icon_name("zoom-out-symbolic")
-        zoomOutButton.set_has_frame(False)
-
+        printPageButton = self.createActionButton("document-print")
+        printPageButton.connect("clicked", lambda event: webview.printPage())
+        zoomInButton = self.createActionButton("zoom-in-symbolic")
+        zoomOutButton = self.createActionButton("zoom-out-symbolic")
         zoomInButton.connect("clicked", webview.zoomIn, zoomOutButton)
         zoomOutButton.connect("clicked", webview.zoomOut, zoomInButton)
 
@@ -82,6 +63,7 @@ class newPage(Gtk.Box):
         actionBox.append(reloadButton)
         actionBox.append(inspectorButton)
         actionBox.append(sendToAIButton)
+        actionBox.append(printPageButton)
         actionBox.append(zoomInButton)
         actionBox.append(zoomOutButton)
 
@@ -98,3 +80,9 @@ class newPage(Gtk.Box):
         messages = [{"role": "system", "content": "You are LLaMa, an AI assistant. Your top priority is achieving user fulfillment via helping them with their requests based on a given page not owned by you"}]
         messages.append({"role": "system", "content": "The page to answer based on will be given next. The actors here are the site owners."})
         messages.append({"role": "system", "content": text_content.strip()})
+
+    def createActionButton(self, icon):
+        button = Gtk.Button()
+        button.set_icon_name(icon)
+        button.set_has_frame(False)
+        return button

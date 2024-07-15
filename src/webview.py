@@ -74,3 +74,6 @@ class newWebview(WebKit.WebView):
         settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
         if(settings.get_boolean('custom-homepage')):
             self.loadWebPage(settings.get_string('custom-homepage-url'))
+
+    def printPage(self):
+        WebKit.PrintOperation.run_dialog(WebKit.PrintOperation.new(self))
