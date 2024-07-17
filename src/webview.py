@@ -14,6 +14,7 @@ class newWebview(WebKit.WebView):
         modifiedSettings = WebKit.Settings.set_enable_developer_extras(settings, True)
         self.set_settings(settings)
         self.set_vexpand(True)
+        self.connect('load-failed', self.errorPrint)
 
     # Shows / Hides the inspector window
     def loadInspector(self):
@@ -77,3 +78,11 @@ class newWebview(WebKit.WebView):
 
     def printPage(self):
         WebKit.PrintOperation.run_dialog(WebKit.PrintOperation.new(self))
+
+    def errorPrint(self, webview, event, url, error):
+        print(error.code)
+        print(error.message)
+        if(error.code == 1 or error.code == 0):
+            self.load_alternate_html('<style>body{background-color: #242424; color:white; padding: 10px; padding-top: 30px;} h1 {text-align: center;} div{margin: auto; max-width: 550px;} p {font-size: 14;}</style><div><h1>Unable to display this website</h1>' + f'<p>The site at {url} seems to be unavailable.</p><p>It may be temporarily inaccessible or moved to a new address. You may wish to verify that your internet connection is working correctly.<p></div>', url)
+        elif(error.code == 2):
+            self.load_alternate_html('<style>body{background-color: #242424; color:white; padding: 10px; padding-top: 30px;} div{margin: auto; max-width: 550px;} p {font-size: 14;}</style><div><h1 style="color:coral;text-align:center;">This Connection is Not Secure</h1>' + f'<p>This does not look like the real {url}. Attackers might be trying to steal or alter information going to or from this site.<p></div>', url)
