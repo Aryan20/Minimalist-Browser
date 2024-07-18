@@ -32,6 +32,8 @@ minimalistbrowser_sources = [
   'page.py',
   'webview.py',
   'preferences.py',
+  'utils.py',
+  'history_manager.py'
 ]
 
 install_data(minimalistbrowser_sources, install_dir: moduledir)

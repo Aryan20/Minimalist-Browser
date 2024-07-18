@@ -16,7 +16,7 @@ class newPage(Gtk.Box):
         self.set_orientation(Gtk.Orientation.VERTICAL)
         
     # Creates a new page composed of webview, searchbar, webview buttons, etc...
-    def addPage(self, tabPage, messages):
+    def addPage(self, tabPage, messages, **kwargs):
         searchBarEntry = Gtk.Entry()
         searchBarEntry.set_placeholder_text('Search or enter web address')
         searchBarEntry.grab_focus()
@@ -69,7 +69,10 @@ class newPage(Gtk.Box):
 
         self.append(actionBox)
         self.append(webview)
-        webview.loadHomePage()
+        if(len(kwargs) > 0 and kwargs['url']):
+            webview.load_uri(kwargs['url'])
+        else:
+            webview.loadHomePage()
 
     # Scrapes the sent website URL and send it to AI with a custom prompt.
     def sendToAI(self, event, webview, messages):

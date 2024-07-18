@@ -5,6 +5,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('WebKit', '6.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Adw, WebKit, Gio, GLib
+from .history_manager import *
 
 class newWebview(WebKit.WebView):
     # Enables developer settings so that inspector window can be shown
@@ -70,6 +71,7 @@ class newWebview(WebKit.WebView):
         if(self.get_estimated_load_progress() >= 1):
             entry.set_progress_fraction(0)
             tabPage.set_loading(False)
+            add_url(self.get_title(), self.get_uri())
 
     def loadHomePage(self):
         settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
@@ -80,8 +82,6 @@ class newWebview(WebKit.WebView):
         WebKit.PrintOperation.run_dialog(WebKit.PrintOperation.new(self))
 
     def errorPrint(self, webview, event, url, error):
-        print(error.code)
-        print(error.message)
         if(error.code == 1 or error.code == 0):
             self.load_alternate_html('<style>body{background-color: #242424; color:white; padding: 10px; padding-top: 30px;} h1 {text-align: center;} div{margin: auto; max-width: 550px;} p {font-size: 14;}</style><div><h1>Unable to display this website</h1>' + f'<p>The site at {url} seems to be unavailable.</p><p>It may be temporarily inaccessible or moved to a new address. You may wish to verify that your internet connection is working correctly.<p></div>', url)
         elif(error.code == 2):

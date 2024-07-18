@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="AdwDialog" id="dialog">
+    <property name="content-width">640</property>
+    <property name="content-height">580</property>
+    <property name="title" translatable="yes">History</property>
+    <child>
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar"></object>
+        </child>
+        <child>
+          <object class="GtkStack" id="history_presentation_stack">
+            <property name="vexpand">True</property>
+            <child>
+              <object class="GtkScrolledWindow" id="history_scrolled_window">
+                <child>
+                  <object class="GtkViewport">
+                    <property name="scroll-to-focus">True</property>
+                    <child>
+                      <object class="AdwClamp">
+                        <property name="margin_start">6</property>
+                        <property name="margin_end">6</property>
+                        <property name="maximum_size">1024</property>
+                        <child>
+                          <object class="GtkListBox" id="listbox">
+                            <property name="margin_top">6</property>
+                            <property name="margin_bottom">6</property>
+                            <property name="valign">start</property>
+                            <property name="selection_mode">none</property>
+                            <property name="activate_on_single_click">True</property>
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwStatusPage" id="empty_history_message">
+                <property name="title" translatable="yes">No History Found</property>
+                <property name="description" translatable="yes">Visited pages will be listed here</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

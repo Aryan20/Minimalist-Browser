@@ -10,6 +10,9 @@ from openai import OpenAI
 from.page import newPage
 from.preferences import preferences
 
+from .utils import *
+from .history_manager import *
+
 client = OpenAI(
     base_url="http://localhost:8080/v1",
     api_key = "sk-no-key-required"
@@ -22,6 +25,7 @@ class MinimalistbrowserApplication(Adw.Application):
         self.createAction('quit', lambda *_: self.quit(), ['<primary>q'])
         self.createAction('about', self.onAboutAction)
         self.createAction('preferences', self.onPreferencesAction)
+        self.createAction('history', self.onHistoryAction)
         self.settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
 
     def do_activate(self):
@@ -50,6 +54,7 @@ class MinimalistbrowserApplication(Adw.Application):
         self.win = builder.get_object("main_window")
         self.win.set_application(self)
         self.win.present()
+        check_db_exists()
     
     def addPage(self):
         page = newPage()
@@ -74,6 +79,36 @@ class MinimalistbrowserApplication(Adw.Application):
     def onPreferencesAction(self, widget, _):
         preferencesDialog = preferences()
         preferencesDialog.present()
+
+    def onHistoryAction(self, widget, _):
+        builder = Gtk.Builder()
+        builder.add_from_resource("/in/aryank/MinimalistBrowser/history_dialog.ui")
+        list_box = builder.get_object("listbox")
+
+        statement = "SELECT * from urls ORDER BY last_visit_time DESC"
+        rows = execute_search(statement)
+        if(len(rows) > 0):
+            for row in rows:
+                action_row = Adw.ActionRow()
+                action_row.set_use_markup(False)
+                action_row.set_title(row[2])
+                action_row.set_subtitle(row[1])
+                action_row.set_subtitle_lines(1)
+                action_row.set_activatable(True)
+                action_row.connect("activated", self.history_row_activated_cb)
+                list_box.append(action_row)
+        else:
+            history_stack = builder.get_object("history_presentation_stack")
+            status_page = builder.get_object("empty_history_message")
+            history_stack.set_visible_child(status_page)
+        dialog = builder.get_object("dialog")
+        dialog.present()
+
+    def history_row_activated_cb(self, row): 
+        page = newPage()
+        tabPage = self.tab_view.append(page)
+        tabPage.set_live_thumbnail(True)
+        page.addPage(tabPage, self.messages, url=row.get_subtitle())
 
     def createAction(self, name, callback, shortcuts=None):
         """Add an application action.

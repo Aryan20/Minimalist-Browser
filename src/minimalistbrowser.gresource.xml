@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/in/aryank/MinimalistBrowser">
     <file preprocess="xml-stripblanks">web_sidebar.ui</file>
+    <file preprocess="xml-stripblanks">history_dialog.ui</file>
   </gresource>
 </gresources>
