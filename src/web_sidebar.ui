@@ -39,14 +39,14 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="aiEntry">
+                      <object class="GtkEntry" id="ai_entry">
                         <property name="placeholder-text">Enter query</property>
                         <property name="margin-top">18</property>
                         <property name="hexpand">true</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkProgressBar" id="aiProgressBar">
+                      <object class="GtkProgressBar" id="ai_progress_bar">
                         <property name="inverted">true</property>
                         <property name="pulse-step">0.35</property>
                         <property name="show-text">true</property>
@@ -63,7 +63,7 @@
                     <property name="vexpand">1</property>
                     <property name="margin-top">10</property>
                     <child>
-                      <object class="GtkBox" id="aiResponseList">
+                      <object class="GtkBox" id="ai_response_list">
                         <property name="orientation">1</property>
                         <property name="margin-bottom">10</property>
                         <property name="spacing">6</property>

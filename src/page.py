@@ -8,75 +8,75 @@ from bs4 import BeautifulSoup
 
 from gi.repository import Gtk, Adw, Gio, GLib
 
-from .webview import newWebview
-from .utils import createActionButton
+from .webview import NewWebView
+from .utils import create_action_button
 
-class newPage(Gtk.Box):
+class NewPage(Gtk.Box):
     def __init__(self, **kwargs):
         super().__init__()
         self.set_orientation(Gtk.Orientation.VERTICAL)
         
     # Creates a new page composed of webview, searchbar, webview buttons, etc...
-    def addPage(self, tabPage, messages, **kwargs):
-        searchBarEntry = Gtk.Entry()
-        searchBarEntry.set_placeholder_text('Search or enter web address')
-        searchBarEntry.grab_focus()
-        searchBarEntry.set_hexpand(True)
+    def add_page(self, tab_page, messages, **kwargs):
+        search_bar_entry = Gtk.Entry()
+        search_bar_entry.set_placeholder_text('Search or enter web address')
+        search_bar_entry.grab_focus()
+        search_bar_entry.set_hexpand(True)
 
-        webview = newWebview()
+        webview = NewWebView()
 
-        reloadButton = createActionButton("view-refresh-symbolic")
+        reloadButton = create_action_button("view-refresh-symbolic")
         reloadButton.connect("clicked", lambda event, webview: webview.reload(), webview)
-        backButton = createActionButton("go-previous-symbolic")
-        backButton.connect("clicked", lambda event: webview.go_back())
-        forwardButton = createActionButton("go-next-symbolic")
-        forwardButton.connect("clicked", lambda event: webview.go_forward())
-        inspectorButton = createActionButton("window-new-symbolic")
-        inspectorButton.connect("clicked", lambda event: webview.loadInspector())
-        sendToAIButton = createActionButton("document-send-symbolic")
-        sendToAIButton.connect("clicked", self.sendToAI, webview, messages)
-        printPageButton = createActionButton("document-print")
-        printPageButton.connect("clicked", lambda event: webview.printPage())
-        zoomInButton = createActionButton("zoom-in-symbolic")
-        zoomOutButton = createActionButton("zoom-out-symbolic")
-        zoomInButton.connect("clicked", webview.zoomIn, zoomOutButton)
-        zoomOutButton.connect("clicked", webview.zoomOut, zoomInButton)
+        back_button = create_action_button("go-previous-symbolic")
+        back_button.connect("clicked", lambda event: webview.go_back())
+        forward_button = create_action_button("go-next-symbolic")
+        forward_button.connect("clicked", lambda event: webview.go_forward())
+        inspector_button = create_action_button("window-new-symbolic")
+        inspector_button.connect("clicked", lambda event: webview.load_inspector_cb())
+        send_to_ai_button = create_action_button("document-send-symbolic")
+        send_to_ai_button.connect("clicked", self.send_page_content_to_ai, webview, messages)
+        print_page_button = create_action_button("document-print")
+        print_page_button.connect("clicked", lambda event: webview.print_page_cb())
+        zoom_in_button = create_action_button("zoom-in-symbolic")
+        zoom_out_button = create_action_button("zoom-out-symbolic")
+        zoom_in_button.connect("clicked", webview.zoom_in, zoom_out_button)
+        zoom_out_button.connect("clicked", webview.zoom_out, zoom_in_button)
 
-        forwardButton.set_sensitive(False)
-        backButton.set_sensitive(False)
+        forward_button.set_sensitive(False)
+        back_button.set_sensitive(False)
 
-        actionBox = Gtk.Box()
-        actionBox.set_orientation(Gtk.Orientation.HORIZONTAL)
-        actionBox.set_spacing(5)
-        actionBox.set_margin_top(5)
-        actionBox.set_margin_start(5)
-        actionBox.set_margin_end(5)
-        actionBox.set_margin_bottom(7)
+        action_box = Gtk.Box()
+        action_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+        action_box.set_spacing(5)
+        action_box.set_margin_top(5)
+        action_box.set_margin_start(5)
+        action_box.set_margin_end(5)
+        action_box.set_margin_bottom(7)
 
-        searchBarEntry.connect('activate', webview.loadWebPageEntryCallback)
-        webview.connect('load-changed', webview.loadChanged, searchBarEntry, backButton, forwardButton, tabPage)
-        webview.connect('notify::title', lambda webview, event: tabPage.set_title(webview.get_title()))
-        webview.connect('notify::favicon', lambda webview, event: tabPage.set_icon(webview.get_favicon()))
+        search_bar_entry.connect('activate', webview.load_webpage_entry_cb)
+        webview.connect('load-changed', webview.load_changed_cb, search_bar_entry, back_button, forward_button, tab_page)
+        webview.connect('notify::title', lambda webview, event: tab_page.set_title(webview.get_title()))
+        webview.connect('notify::favicon', lambda webview, event: tab_page.set_icon(webview.get_favicon()))
   
-        actionBox.append(backButton)
-        actionBox.append(forwardButton)
-        actionBox.append(searchBarEntry)
-        actionBox.append(reloadButton)
-        actionBox.append(inspectorButton)
-        actionBox.append(sendToAIButton)
-        actionBox.append(printPageButton)
-        actionBox.append(zoomInButton)
-        actionBox.append(zoomOutButton)
+        action_box.append(back_button)
+        action_box.append(forward_button)
+        action_box.append(search_bar_entry)
+        action_box.append(reloadButton)
+        action_box.append(inspector_button)
+        action_box.append(send_to_ai_button)
+        action_box.append(print_page_button)
+        action_box.append(zoom_in_button)
+        action_box.append(zoom_out_button)
 
-        self.append(actionBox)
+        self.append(action_box)
         self.append(webview)
         if(len(kwargs) > 0 and kwargs['url']):
             webview.load_uri(kwargs['url'])
         else:
-            webview.loadHomePage()
+            webview.load_home_page()
 
     # Scrapes the sent website URL and send it to AI with a custom prompt.
-    def sendToAI(self, event, webview, messages):
+    def send_page_content_to_ai(self, event, webview, messages):
         content = BeautifulSoup(requests.get(webview.get_uri()).content, 'html.parser')
         text_content = ''
         for tag in content.find_all(['h1', 'h2', 'h3', 'p', 'span', 'a']):

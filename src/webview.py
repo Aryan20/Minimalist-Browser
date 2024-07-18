@@ -7,18 +7,18 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, Adw, WebKit, Gio, GLib
 from .history_manager import *
 
-class newWebview(WebKit.WebView):
+class NewWebView(WebKit.WebView):
     # Enables developer settings so that inspector window can be shown
     def __init__(self, **kwargs):
         super().__init__()
         settings = self.get_settings()
-        modifiedSettings = WebKit.Settings.set_enable_developer_extras(settings, True)
+        modified_settings = WebKit.Settings.set_enable_developer_extras(settings, True)
         self.set_settings(settings)
         self.set_vexpand(True)
-        self.connect('load-failed', self.errorPrint)
+        self.connect('load-failed', self.error_page_cb)
 
     # Shows / Hides the inspector window
-    def loadInspector(self):
+    def load_inspector_cb(self):
         """
         Callback for the inspectorButton.
         Shows / Hides the inspector window
@@ -29,25 +29,25 @@ class newWebview(WebKit.WebView):
         else:
             inspector.show()
 
-    def zoomIn(self, zoomInButton, zoomOutButton):
-        zoomLevel = self.get_zoom_level() + self.get_zoom_level() * 0.2 + 0.1
-        if zoomLevel >= 5.0:
-            zoomInButton.set_sensitive(False)
-        zoomOutButton.set_sensitive(True)
-        self.set_zoom_level(zoomLevel)
+    def zoom_in(self, zoom_in_button, zoom_out_button):
+        zoom_level = self.get_zoom_level() + self.get_zoom_level() * 0.2 + 0.1
+        if zoom_level >= 5.0:
+            zoom_in_button.set_sensitive(False)
+        zoom_out_button.set_sensitive(True)
+        self.set_zoom_level(zoom_level)
 
-    def zoomOut(self, zoomOutButton, zoomInButton):
-        zoomLevel = self.get_zoom_level() - self.get_zoom_level() * 0.2 - 0.1
-        if zoomLevel <= 0.2:
-            zoomOutButton.set_sensitive(False)
-        zoomInButton.set_sensitive(True)
-        self.set_zoom_level(zoomLevel)
+    def zoom_out(self, zoom_out_button, zoom_in_button):
+        zoom_level = self.get_zoom_level() - self.get_zoom_level() * 0.2 - 0.1
+        if zoom_level <= 0.2:
+            zoom_out_button.set_sensitive(False)
+        zoom_in_button.set_sensitive(True)
+        self.set_zoom_level(zoom_level)
 
-    def loadWebPageEntryCallback(self, entry):
+    def load_webpage_entry_cb(self, entry):
         url = entry.get_text()
-        self.loadWebPage(url)
+        self.load_web_page(url)
 
-    def loadWebPage(self, url):
+    def load_web_page(self, url):
         settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
         regex = r"^(www\.)?[\w-]+\.[\w.]+[\w-]*$"
         scheme = GLib.Uri.peek_scheme(url)
@@ -62,26 +62,26 @@ class newWebview(WebKit.WebView):
 
     # Page load request initiated.
     # Elements such as entry and progress bar among others should be updated.
-    def loadChanged(self, webview, event, entry, backButton, forwardButton, tabPage):
-        tabPage.set_loading(True)
+    def load_changed_cb(self, webview, event, entry, back_button, forward_button, tab_page):
+        tab_page.set_loading(True)
         entry.set_text(self.get_uri())
         entry.set_progress_fraction(self.get_estimated_load_progress())
-        forwardButton.set_sensitive(self.can_go_forward())
-        backButton.set_sensitive(self.can_go_back())
+        forward_button.set_sensitive(self.can_go_forward())
+        back_button.set_sensitive(self.can_go_back())
         if(self.get_estimated_load_progress() >= 1):
             entry.set_progress_fraction(0)
-            tabPage.set_loading(False)
+            tab_page.set_loading(False)
             add_url(self.get_title(), self.get_uri())
 
-    def loadHomePage(self):
+    def load_home_page(self):
         settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
         if(settings.get_boolean('custom-homepage')):
-            self.loadWebPage(settings.get_string('custom-homepage-url'))
+            self.load_web_page(settings.get_string('custom-homepage-url'))
 
-    def printPage(self):
+    def print_page_cb(self):
         WebKit.PrintOperation.run_dialog(WebKit.PrintOperation.new(self))
 
-    def errorPrint(self, webview, event, url, error):
+    def error_page_cb(self, webview, event, url, error):
         if(error.code == 1 or error.code == 0):
             self.load_alternate_html('<style>body{background-color: #242424; color:white; padding: 10px; padding-top: 30px;} h1 {text-align: center;} div{margin: auto; max-width: 550px;} p {font-size: 14;}</style><div><h1>Unable to display this website</h1>' + f'<p>The site at {url} seems to be unavailable.</p><p>It may be temporarily inaccessible or moved to a new address. You may wish to verify that your internet connection is working correctly.<p></div>', url)
         elif(error.code == 2):

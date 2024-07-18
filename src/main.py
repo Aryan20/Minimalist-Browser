@@ -7,8 +7,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, Adw, Gio, GLib, Gdk
 
 from openai import OpenAI
-from.page import newPage
-from.preferences import preferences
+from .page import NewPage
+from .preferences import Preferences
 
 from .utils import *
 from .history_manager import *
@@ -22,10 +22,10 @@ class MinimalistbrowserApplication(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(application_id='in.aryank.MinimalistBrowser',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
-        self.createAction('quit', lambda *_: self.quit(), ['<primary>q'])
-        self.createAction('about', self.onAboutAction)
-        self.createAction('preferences', self.onPreferencesAction)
-        self.createAction('history', self.onHistoryAction)
+        self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
+        self.create_action('about', self.on_about_action_cb)
+        self.create_action('preferences', self.on_preferences_action_cb)
+        self.create_action('history', self.on_history_action_cb)
         self.settings = Gio.Settings(schema_id="in.aryank.MinimalistBrowser")
 
     def do_activate(self):
@@ -37,34 +37,34 @@ class MinimalistbrowserApplication(Adw.Application):
         self.button_new_tab = builder.get_object("button_new_tab")
         self.overview = builder.get_object("overview")
         self.button_overview = builder.get_object("button_overview")
-        self.aiResponseList = builder.get_object("aiResponseList")
+        self.ai_response_list = builder.get_object("ai_response_list")
 
-        self.aiEntry = builder.get_object("aiEntry")
-        self.aiProgressBar = builder.get_object("aiProgressBar")
+        self.ai_entry = builder.get_object("ai_entry")
+        self.ai_progress_bar = builder.get_object("ai_progress_bar")
 
-        self.initialiseAI()
+        self.initialise_ai()
 
-        self.aiEntry.connect("activate", self.openaiCreate)
-        self.overview.connect("create-tab", lambda _: self.addPage())
+        self.ai_entry.connect("activate", self.openai_create_cb)
+        self.overview.connect("create-tab", lambda _: self.add_page())
         self.button_overview.connect("clicked", lambda _: self.overview.set_open(True))
-        self.button_new_tab.connect("clicked", lambda _: self.addPage())
+        self.button_new_tab.connect("clicked", lambda _: self.add_page())
 
-        self.addPage()
+        self.add_page()
 
         self.win = builder.get_object("main_window")
         self.win.set_application(self)
         self.win.present()
         check_db_exists()
     
-    def addPage(self):
-        page = newPage()
-        tabPage = self.tab_view.append(page)
-        tabPage.set_title("New Page")
-        tabPage.set_live_thumbnail(True)
-        page.addPage(tabPage, self.messages)
+    def add_page(self):
+        page = NewPage()
+        tab_page = self.tab_view.append(page)
+        tab_page.set_title("New Page")
+        tab_page.set_live_thumbnail(True)
+        page.add_page(tab_page, self.messages)
 
     # Creates the about section window
-    def onAboutAction(self, widget, _):
+    def on_about_action_cb(self, widget, _):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
                                 application_name='Minimalist Browser',
@@ -76,11 +76,11 @@ class MinimalistbrowserApplication(Adw.Application):
                                 copyright='MIT © 2024 Aryan Kaushik')
         about.present()
 
-    def onPreferencesAction(self, widget, _):
-        preferencesDialog = preferences()
-        preferencesDialog.present()
+    def on_preferences_action_cb(self, widget, _):
+        preferences_dialog = Preferences()
+        preferences_dialog.present()
 
-    def onHistoryAction(self, widget, _):
+    def on_history_action_cb(self, widget, _):
         builder = Gtk.Builder()
         builder.add_from_resource("/in/aryank/MinimalistBrowser/history_dialog.ui")
         list_box = builder.get_object("listbox")
@@ -95,7 +95,7 @@ class MinimalistbrowserApplication(Adw.Application):
                 action_row.set_subtitle(row[1])
                 action_row.set_subtitle_lines(1)
                 action_row.set_activatable(True)
-                copy_button = createActionButton('edit-copy')
+                copy_button = create_action_button('edit-copy')
                 copy_button.connect('clicked', self.copy_history_url_cb, action_row)
                 action_row.add_suffix(copy_button)
                 list_box.append(action_row)
@@ -108,17 +108,17 @@ class MinimalistbrowserApplication(Adw.Application):
         dialog.present()
 
     def history_row_activated_cb(self, listbox, actionrow): 
-        page = newPage()
-        tabPage = self.tab_view.append(page)
-        tabPage.set_live_thumbnail(True)
-        page.addPage(tabPage, self.messages, url=actionrow.get_subtitle())
+        page = NewPage()
+        tab_page = self.tab_view.append(page)
+        tab_page.set_live_thumbnail(True)
+        page.add_page(tab_page, self.messages, url=actionrow.get_subtitle())
 
     def copy_history_url_cb(self, button, action_row):
         Gdk.Clipboard.set(
             Gdk.Display.get_clipboard(Gdk.Display.get_default()), 
             action_row.get_subtitle())
 
-    def createAction(self, name, callback, shortcuts=None):
+    def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
 
         Args:
@@ -133,17 +133,17 @@ class MinimalistbrowserApplication(Adw.Application):
         if shortcuts:
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
-    def openaiCreate(self, entry):
+    def openai_create_cb(self, entry):
         prompt = entry.get_text()
         entry.set_text("")
         self.prompt = prompt
-        self.responseReceived = False
+        self.ai_response_received = False
         self.messages.append({"role": "user", "content": prompt})
-        self.aiResponseDisplay(prompt, "User ->")
-        thread = threading.Thread(target=self.llamaIO)
+        self.ai_response_display(prompt, "User ->")
+        thread = threading.Thread(target=self.llama_io)
         thread.start()
 
-    def llamaIO(self):
+    def llama_io(self):
         response = client.chat.completions.create(
             model="LLaMA_CPP",
             messages=[
@@ -151,55 +151,55 @@ class MinimalistbrowserApplication(Adw.Application):
                 for m in self.messages
             ]
         )
-        self.responseReceived = True
+        self.ai_response_received = True
         response = response.choices[0].message.content
         self.messages.append({"role": "assistant", "content": response})
-        self.aiResponseDisplay(response, "Assistant ->")
+        self.ai_response_display(response, "Assistant ->")
     
-    def aiResponseDisplay(self, message, role):
+    def ai_response_display(self, message, role):
         # Show / Hide the progress bar based on current state of bot.
-        self.aiProgressBar.set_visible(not self.responseReceived)
-        self.pulseProgress()
+        self.ai_progress_bar.set_visible(not self.ai_response_received)
+        self.pulse_progress()
 
         # Display the message by AI and User.
-        self.aiResponseList.prepend(aiMessageFrame(role=role, message=message))
+        self.ai_response_list.prepend(AiMessageFrame(role=role, message=message))
 
-    def pulseProgress(self):
-        def onPulse():
-            if self.responseReceived:
-                self.aiProgressBar.set_fraction(0)
+    def pulse_progress(self):
+        def on_pulse():
+            if self.ai_response_received:
+                self.ai_progress_bar.set_fraction(0)
                 return False
 
-            self.aiProgressBar.pulse()
+            self.ai_progress_bar.pulse()
             return True
         
         pulse_period = 500
-        GLib.timeout_add(pulse_period, onPulse)
+        GLib.timeout_add(pulse_period, on_pulse)
 
-    def initialiseAI(self):
+    def initialise_ai(self):
         self.messages = [{"role": "system", "content": "You are Minimalist AI, an AI assistant based on LLaMa. Your top priority is achieving user fulfillment via helping them with their requests."}]
-        self.responseReceived = True
+        self.ai_response_received = True
 
-class aiMessageFrame(Gtk.Frame):
+class AiMessageFrame(Gtk.Frame):
     def __init__(self, **kwargs):
         super().__init__()
-        responseBox = Gtk.Box()
-        responseLabel = Gtk.Label()
+        response_box = Gtk.Box()
+        response_label = Gtk.Label()
 
         self.set_label(kwargs["role"])
         self.set_margin_end(3)
         self.set_margin_start(3)
 
-        responseLabel.set_margin_top(10)
-        responseLabel.set_margin_bottom(5)
-        responseLabel.set_margin_start(5)
-        responseLabel.set_margin_end(5)
+        response_label.set_margin_top(10)
+        response_label.set_margin_bottom(5)
+        response_label.set_margin_start(5)
+        response_label.set_margin_end(5)
         
-        responseLabel.set_label(kwargs["message"])
-        responseLabel.set_wrap(True)
+        response_label.set_label(kwargs["message"])
+        response_label.set_wrap(True)
 
-        responseBox.append(responseLabel)
-        self.set_child(responseBox)
+        response_box.append(response_label)
+        self.set_child(response_box)
 
 
 def main(version):

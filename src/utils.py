@@ -17,7 +17,7 @@ def check_db_exists():
     Gio.File.create(filename, Gio.FileCreateFlags.PRIVATE, None)
     create_first_connection(filename.get_path())
 
-def createActionButton(icon):
+def create_action_button(icon):
     button = Gtk.Button()
     button.set_icon_name(icon)
     button.set_has_frame(False)
