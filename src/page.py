@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from gi.repository import Gtk, Adw, Gio, GLib
 
 from .webview import newWebview
+from .utils import createActionButton
 
 class newPage(Gtk.Box):
     def __init__(self, **kwargs):
@@ -24,20 +25,20 @@ class newPage(Gtk.Box):
 
         webview = newWebview()
 
-        reloadButton = self.createActionButton("view-refresh-symbolic")
+        reloadButton = createActionButton("view-refresh-symbolic")
         reloadButton.connect("clicked", lambda event, webview: webview.reload(), webview)
-        backButton = self.createActionButton("go-previous-symbolic")
+        backButton = createActionButton("go-previous-symbolic")
         backButton.connect("clicked", lambda event: webview.go_back())
-        forwardButton = self.createActionButton("go-next-symbolic")
+        forwardButton = createActionButton("go-next-symbolic")
         forwardButton.connect("clicked", lambda event: webview.go_forward())
-        inspectorButton = self.createActionButton("window-new-symbolic")
+        inspectorButton = createActionButton("window-new-symbolic")
         inspectorButton.connect("clicked", lambda event: webview.loadInspector())
-        sendToAIButton = self.createActionButton("document-send-symbolic")
+        sendToAIButton = createActionButton("document-send-symbolic")
         sendToAIButton.connect("clicked", self.sendToAI, webview, messages)
-        printPageButton = self.createActionButton("document-print")
+        printPageButton = createActionButton("document-print")
         printPageButton.connect("clicked", lambda event: webview.printPage())
-        zoomInButton = self.createActionButton("zoom-in-symbolic")
-        zoomOutButton = self.createActionButton("zoom-out-symbolic")
+        zoomInButton = createActionButton("zoom-in-symbolic")
+        zoomOutButton = createActionButton("zoom-out-symbolic")
         zoomInButton.connect("clicked", webview.zoomIn, zoomOutButton)
         zoomOutButton.connect("clicked", webview.zoomOut, zoomInButton)
 
@@ -83,9 +84,3 @@ class newPage(Gtk.Box):
         messages = [{"role": "system", "content": "You are LLaMa, an AI assistant. Your top priority is achieving user fulfillment via helping them with their requests based on a given page not owned by you"}]
         messages.append({"role": "system", "content": "The page to answer based on will be given next. The actors here are the site owners."})
         messages.append({"role": "system", "content": text_content.strip()})
-
-    def createActionButton(self, icon):
-        button = Gtk.Button()
-        button.set_icon_name(icon)
-        button.set_has_frame(False)
-        return button

@@ -1,6 +1,8 @@
 import sqlite3
 
-from gi.repository import Gio, GLib
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, Gio, GLib
 
 def check_db_exists():
     data_dir = GLib.get_user_data_dir()
@@ -14,6 +16,16 @@ def check_db_exists():
         Gio.File.make_directory(dirname, None)
     Gio.File.create(filename, Gio.FileCreateFlags.PRIVATE, None)
     create_first_connection(filename.get_path())
+
+def createActionButton(icon):
+    button = Gtk.Button()
+    button.set_icon_name(icon)
+    button.set_has_frame(False)
+    button.set_hexpand(False)
+    button.set_vexpand(False)
+    button.set_halign(Gtk.Align.CENTER)
+    button.set_valign(Gtk.Align.CENTER)
+    return button
 
 def create_first_connection(path):
     connection = sqlite3.connect(path)

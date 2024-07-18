@@ -4,7 +4,7 @@ import threading
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from gi.repository import Gtk, Adw, Gio, GLib
+from gi.repository import Gtk, Adw, Gio, GLib, Gdk
 
 from openai import OpenAI
 from.page import newPage
@@ -95,8 +95,11 @@ class MinimalistbrowserApplication(Adw.Application):
                 action_row.set_subtitle(row[1])
                 action_row.set_subtitle_lines(1)
                 action_row.set_activatable(True)
-                action_row.connect("activated", self.history_row_activated_cb)
+                copy_button = createActionButton('edit-copy')
+                copy_button.connect('clicked', self.copy_history_url_cb, action_row)
+                action_row.add_suffix(copy_button)
                 list_box.append(action_row)
+            list_box.connect("row-activated", self.history_row_activated_cb)
         else:
             history_stack = builder.get_object("history_presentation_stack")
             status_page = builder.get_object("empty_history_message")
@@ -104,11 +107,16 @@ class MinimalistbrowserApplication(Adw.Application):
         dialog = builder.get_object("dialog")
         dialog.present()
 
-    def history_row_activated_cb(self, row): 
+    def history_row_activated_cb(self, listbox, actionrow): 
         page = newPage()
         tabPage = self.tab_view.append(page)
         tabPage.set_live_thumbnail(True)
-        page.addPage(tabPage, self.messages, url=row.get_subtitle())
+        page.addPage(tabPage, self.messages, url=actionrow.get_subtitle())
+
+    def copy_history_url_cb(self, button, action_row):
+        Gdk.Clipboard.set(
+            Gdk.Display.get_clipboard(Gdk.Display.get_default()), 
+            action_row.get_subtitle())
 
     def createAction(self, name, callback, shortcuts=None):
         """Add an application action.
