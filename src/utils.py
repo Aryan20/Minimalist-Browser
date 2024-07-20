@@ -17,10 +17,13 @@ def check_db_exists():
     Gio.File.create(filename, Gio.FileCreateFlags.PRIVATE, None)
     create_first_connection(filename.get_path())
 
-def create_action_button(icon):
+def create_action_button(icon, **kwargs):
     button = Gtk.Button()
     button.set_icon_name(icon)
-    button.set_has_frame(False)
+    if len(kwargs) > 0:
+        button.set_has_frame(kwargs["frame"])
+    else:
+        button.set_has_frame(False)
     button.set_hexpand(False)
     button.set_vexpand(False)
     button.set_halign(Gtk.Align.CENTER)

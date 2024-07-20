@@ -29,19 +29,21 @@ class NewWebView(WebKit.WebView):
         else:
             inspector.show()
 
-    def zoom_in(self, zoom_in_button, zoom_out_button):
+    def zoom_in(self, zoom_in_button, zoom_out_button, zoom_level_button):
         zoom_level = self.get_zoom_level() + self.get_zoom_level() * 0.2 + 0.1
         if zoom_level >= 5.0:
             zoom_in_button.set_sensitive(False)
         zoom_out_button.set_sensitive(True)
         self.set_zoom_level(zoom_level)
+        zoom_level_button.set_label(str(int(zoom_level * 100)) + "%")
 
-    def zoom_out(self, zoom_out_button, zoom_in_button):
+    def zoom_out(self, zoom_out_button, zoom_in_button, zoom_level_button):
         zoom_level = self.get_zoom_level() - self.get_zoom_level() * 0.2 - 0.1
         if zoom_level <= 0.2:
             zoom_out_button.set_sensitive(False)
         zoom_in_button.set_sensitive(True)
         self.set_zoom_level(zoom_level)
+        zoom_level_button.set_label(str(int(zoom_level * 100)) + "%")
 
     def load_webpage_entry_cb(self, entry):
         url = entry.get_text()
