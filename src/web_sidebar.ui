@@ -85,36 +85,36 @@
                         <property name="view">tab_view</property>
                         <property name="autohide">false</property>
                         <child>
-                          <object class="GtkBox">
-                            <property name="spacing">5</property>
-                            <child type="start">
-                              <object class="GtkToggleButton" id="show_sidebar_button">
-                                <property name="icon-name">view-dual-symbolic</property>
-                                <property name="tooltip-text" translatable="true">Toggle Sidebar</property>
-                                <property name="active" bind-source="split_view" bind-property="show-sidebar" bind-flags="sync-create"/>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_new_tab">
-                                <property name="icon-name">tab-new-symbolic</property>
-                                <property name="has-frame">false</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="button_overview">
-                                <property name="icon-name">view-grid-symbolic</property>
-                                <property name="has-frame">false</property>
-                              </object>
-                            </child>
+                          <object class="GtkToggleButton" id="show_sidebar_button">
+                            <property name="icon-name">view-dual-symbolic</property>
+                            <property name="tooltip-text" translatable="true">Toggle Sidebar</property>
+                            <property name="active" bind-source="split_view" bind-property="show-sidebar" bind-flags="sync-create"/>
                           </object>
                         </child>
                         <child type="end">
-                          <object class="GtkMenuButton">
-                            <property name="primary">True</property>
-                            <property name="icon-name">open-menu-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Menu</property>
-                            <property name="menu-model">primary_menu</property>
-                            <property name="has-frame">false</property>
+                          <object class="GtkBox">
+                              <property name="spacing">5</property>
+                              <child>
+                                <object class="GtkButton" id="button_new_tab">
+                                  <property name="icon-name">tab-new-symbolic</property>
+                                  <property name="has-frame">false</property>
+                                </object>
+                              </child>
+                              <child>
+                                <object class="GtkButton" id="button_overview">
+                                  <property name="icon-name">view-grid-symbolic</property>
+                                  <property name="has-frame">false</property>
+                                </object>
+                              </child>
+                              <child>
+                                <object class="GtkMenuButton">
+                                  <property name="primary">True</property>
+                                  <property name="icon-name">open-menu-symbolic</property>
+                                  <property name="tooltip-text" translatable="yes">Menu</property>
+                                  <property name="menu-model">primary_menu</property>
+                                  <property name="has-frame">false</property>
+                                </object>
+                              </child>
                           </object>
                         </child>
                       </object>
