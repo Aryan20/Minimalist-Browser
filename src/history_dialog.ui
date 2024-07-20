@@ -8,7 +8,18 @@
     <child>
       <object class="AdwToolbarView">
         <child type="top">
-          <object class="AdwHeaderBar"></object>
+          <object class="AdwHeaderBar">
+            <child type="start">
+              <object class="GtkButton" id="clear_all_button">
+                <property name="child">
+                  <object class="AdwButtonContent">
+                    <property name="icon-name">user-trash-symbolic</property>
+                    <property name="label" translatable="yes">Clear All</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
         </child>
         <child>
           <object class="GtkStack" id="history_presentation_stack">

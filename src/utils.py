@@ -56,7 +56,7 @@ def create_connection():
     cursor = connection.cursor()
     return [connection, cursor]
 
-def execute_insert(statement):
+def execute_statement(statement):
     con_cur = create_connection()
     cursor = con_cur[1]
     cursor.execute(statement)

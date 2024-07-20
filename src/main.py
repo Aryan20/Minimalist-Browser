@@ -106,8 +106,13 @@ class MinimalistbrowserApplication(Adw.Application):
             history_stack = builder.get_object("history_presentation_stack")
             status_page = builder.get_object("empty_history_message")
             history_stack.set_visible_child(status_page)
+
         dialog = builder.get_object("dialog")
-        dialog.present()
+        dialog.present(self.win)
+
+        clear_all_button = builder.get_object("clear_all_button")
+        alert = HistoryClearAlert()
+        clear_all_button.connect('clicked', lambda event: alert.present(dialog))
 
     def history_row_activated_cb(self, listbox, actionrow): 
         page = NewPage()
