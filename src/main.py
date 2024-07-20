@@ -97,6 +97,8 @@ class MinimalistbrowserApplication(Adw.Application):
                 action_row.set_activatable(True)
                 copy_button = create_action_button('edit-copy')
                 copy_button.connect('clicked', self.copy_history_url_cb, action_row)
+                label = Gtk.Label.new(format_date_display(row[3]))
+                action_row.add_suffix(label)
                 action_row.add_suffix(copy_button)
                 list_box.append(action_row)
             list_box.connect("row-activated", self.history_row_activated_cb)

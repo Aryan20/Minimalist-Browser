@@ -1,8 +1,8 @@
-import sqlite3
-
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, GLib
+import sqlite3
+from datetime import datetime
 
 def check_db_exists():
     data_dir = GLib.get_user_data_dir()
@@ -74,3 +74,21 @@ def terminate_connection(connection):
     connection = connection[0]
     connection.commit()
     connection.close()
+
+def format_date_display(timestamp):
+    current_utc = datetime.utcnow()
+
+    history_datetime = datetime.utcfromtimestamp(timestamp)
+    if current_utc.year == history_datetime.year:
+        if current_utc.month == history_datetime.month:
+            formatted_time = history_datetime.strftime('%a %H:%M')
+        else:
+            formatted_time = history_datetime.strftime('%d %b %H:%M')
+    else:
+        formatted_time = history_datetime.strftime('%d %b %Y %H:%M')
+        
+        
+    return formatted_time
+
+def current_timestamp():
+    return int(datetime.utcnow().timestamp())
