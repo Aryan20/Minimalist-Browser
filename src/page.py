@@ -55,6 +55,7 @@ class NewPage(Gtk.Box):
         zoom_out_button = create_action_button("zoom-out-symbolic", frame=True)
         zoom_in_button.connect("clicked", webview.zoom_in, zoom_out_button, zoom_level_button)
         zoom_out_button.connect("clicked", webview.zoom_out, zoom_in_button, zoom_level_button)
+        zoom_level_button.connect("clicked", webview.reset_zoom, zoom_in_button, zoom_level_button)
 
         forward_button.set_sensitive(False)
         back_button.set_sensitive(False)

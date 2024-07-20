@@ -16,6 +16,8 @@ class NewWebView(WebKit.WebView):
         self.set_settings(settings)
         self.set_vexpand(True)
         self.connect('load-failed', self.error_page_cb)
+        self.zoom_levels = [25, 33, 50, 67, 75, 80, 90, 100, 110, 125, 150, 175, 200]
+        self.current_zoom_level = 7
 
     # Shows / Hides the inspector window
     def load_inspector_cb(self):
@@ -30,20 +32,33 @@ class NewWebView(WebKit.WebView):
             inspector.show()
 
     def zoom_in(self, zoom_in_button, zoom_out_button, zoom_level_button):
-        zoom_level = self.get_zoom_level() + self.get_zoom_level() * 0.2 + 0.1
-        if zoom_level >= 5.0:
+        changed_zoom_level_index = self.current_zoom_level + 1
+        if changed_zoom_level_index == 12:
             zoom_in_button.set_sensitive(False)
         zoom_out_button.set_sensitive(True)
-        self.set_zoom_level(zoom_level)
-        zoom_level_button.set_label(str(int(zoom_level * 100)) + "%")
-
+        self.change_zoom(changed_zoom_level_index, zoom_level_button)
+        
     def zoom_out(self, zoom_out_button, zoom_in_button, zoom_level_button):
-        zoom_level = self.get_zoom_level() - self.get_zoom_level() * 0.2 - 0.1
-        if zoom_level <= 0.2:
+        changed_zoom_level_index = self.current_zoom_level - 1
+        if changed_zoom_level_index == 0:
             zoom_out_button.set_sensitive(False)
         zoom_in_button.set_sensitive(True)
-        self.set_zoom_level(zoom_level)
-        zoom_level_button.set_label(str(int(zoom_level * 100)) + "%")
+        self.change_zoom(changed_zoom_level_index, zoom_level_button)
+
+    def change_zoom(self, changed_zoom_level_index, zoom_level_button):
+        if changed_zoom_level_index != 7:
+            zoom_level_button.set_sensitive(True)
+        else:
+            zoom_level_button.set_sensitive(False)
+        changed_zoom = self.zoom_levels[changed_zoom_level_index]
+        self.set_zoom_level(changed_zoom / 100.0)
+        zoom_level_button.set_label(str(changed_zoom) + "%")
+        self.current_zoom_level = changed_zoom_level_index
+
+    def reset_zoom(self, zoom_level_button, zoom_in_button, zoom_out_button):
+        self.change_zoom(7, zoom_level_button)
+        zoom_in_button.set_sensitive(True)
+        zoom_out_button.set_sensitive(True)
 
     def load_webpage_entry_cb(self, entry):
         url = entry.get_text()
